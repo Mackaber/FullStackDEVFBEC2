@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 // Place the OR logic inside the template literal or evaluate it first
-const baseUrl = import.meta.env.VITE_BACKEND_INTERNAL_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.BACKEND_INTERNAL_URL || "http://localhost:3000";
 const ENDPOINT = `${baseUrl}/api`;
 
 function App() {
