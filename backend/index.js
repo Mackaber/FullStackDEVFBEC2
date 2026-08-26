@@ -54,3 +54,5 @@ server.listen(PORT, () => {
     client.connect()
     console.log("Conectado a la base de datos")
 })
+
+module.exports = server;
