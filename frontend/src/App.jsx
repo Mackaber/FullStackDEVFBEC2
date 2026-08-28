@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-// Place the OR logic inside the template literal or evaluate it first
-const baseUrl = import.meta.env.BACKEND_INTERNAL_URL || "http://localhost:3000";
-const ENDPOINT = `${baseUrl}/api`;
-
+const ENDPOINT = import.meta.env.VITE_ENDPOINT || '/api'
 function App() {
   const [input, setInput] = useState("");
 
@@ -21,7 +18,7 @@ function App() {
     )
     console.log(response)
     
-    const text = response.text()
+    const text = await response.text()
     console.log(text)
   }
 
