@@ -23,40 +23,48 @@ server.get("/api/hello", (request, response) => {
 // BACKEND RECIBE EL INPUT DEL FRONTEND
 server.post("/api/test", async (request, response) => {
 
-    console.log("BODY EN EL BACKEND: ", request.body)
+    try {
+        client.connect()
 
-    const name = request.body    
-    // BASE DE DATOS: INSERTAR EL INPUT EN LA TABLA USERS
+        console.log("BODY EN EL BACKEND: ", request.body)
 
-    // SIMULAR UNA INYECCIÓN SQL MALICIOSA
-    // const name = "'); DROP TABLE users; --"
+        const name = request.body
+        // BASE DE DATOS: INSERTAR EL INPUT EN LA TABLA USERS
 
-    client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
-        if (err) {
-            console.error("DATABASE ERROR: ", err)
-            response.status(500).send("Error en la base de datos", err)
-        } else {
-            console.log("INSERTED", res)
-        }
-    })
+        // SIMULAR UNA INYECCIÓN SQL MALICIOSA
+        // const name = "'); DROP TABLE users; --"
 
-    // BASE DE DATOS: LEER TODOS LOS REGISTROS DE LA TABLA USERS
-    const results = await client.query("SELECT * FROM users", (err, res) => {
-        if (err) {
-            console.error("DATABASE ERROR: ", err)
-            response.status(500).send("Error en la base de datos")
-        } else {
-            console.log("ROWS: ", res.rows)
-            response.send(res.rows)
-        }
-    })
+        client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
+            if (err) {
+                console.error("DATABASE ERROR: ", err)
+                response.status(500).send("Error en la base de datos", err)
+            } else {
+                console.log("INSERTED", res)
+            }
+        })
+
+        // BASE DE DATOS: LEER TODOS LOS REGISTROS DE LA TABLA USERS
+        const results = await client.query("SELECT * FROM users", (err, res) => {
+            if (err) {
+                console.error("DATABASE ERROR: ", err)
+                response.status(500).send("Error en la base de datos")
+            } else {
+                console.log("ROWS: ", res.rows)
+                response.send(res.rows)
+            }
+        })
+    } catch (error) {
+        console.error("SERVER ERROR: ", error)
+        response.status(500).send("Error en el servidor")
+    }
 })
+
 
 
 server.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`)
 
-    client.connect()
+
     console.log("Conectado a la base de datos")
 })
 
