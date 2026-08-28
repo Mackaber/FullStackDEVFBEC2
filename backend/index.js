@@ -16,6 +16,10 @@ const client = new pg.Client(CONNECTION_STRING)
 server.use(cors())
 server.use(express.text())
 
+server.get("/hello", (request, response) => {
+    response.send("Hello from the backend!")
+})
+
 // BACKEND RECIBE EL INPUT DEL FRONTEND
 server.post("/test", async (request, response) => {
 
