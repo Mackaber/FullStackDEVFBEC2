@@ -21,7 +21,7 @@ server.get("/api/hello", (request, response) => {
 })
 
 // BACKEND RECIBE EL INPUT DEL FRONTEND
-server.post("/test", async (request, response) => {
+server.post("/api/test", async (request, response) => {
 
     console.log("BODY EN EL BACKEND: ", request.body)
 
