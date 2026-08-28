@@ -34,6 +34,7 @@ server.post("/api/test", async (request, response) => {
     client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
         if (err) {
             console.error("DATABASE ERROR: ", err)
+            response.status(500).send("Error en la base de datos", err)
         } else {
             console.log("INSERTED", res)
         }
