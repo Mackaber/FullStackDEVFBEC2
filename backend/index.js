@@ -34,7 +34,7 @@ server.post("/api/test", async (request, response) => {
         // SIMULAR UNA INYECCIÓN SQL MALICIOSA
         // const name = "'); DROP TABLE users; --"
 
-        client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
+        await client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
             if (err) {
                 console.error("DATABASE ERROR: ", err)
                 response.status(500).send("Error en la base de datos", err)
@@ -44,7 +44,7 @@ server.post("/api/test", async (request, response) => {
         })
 
         // BASE DE DATOS: LEER TODOS LOS REGISTROS DE LA TABLA USERS
-        const results = await client.query("SELECT * FROM users", (err, res) => {
+        await client.query("SELECT * FROM users", (err, res) => {
             if (err) {
                 console.error("DATABASE ERROR: ", err)
                 response.status(500).send("Error en la base de datos")
