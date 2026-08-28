@@ -8,9 +8,10 @@ const PORT = 3000
 const server = express()
 
 // Conectar a la base de datos
-CONNECTION_STRING = process.env.PG_CONNECTION_STRING
+const CONNECTION_STRING = process.env.PG_CONNECTION_STRING
 
 const client = new pg.Client(CONNECTION_STRING)
+let clientConnectionPromise
 
 
 server.use(cors())
@@ -24,7 +25,13 @@ server.get("/api/hello", (request, response) => {
 server.post("/api/test", async (request, response) => {
 
     try {
-        client.connect()
+        if (!clientConnectionPromise) {
+            clientConnectionPromise = client.connect().catch((error) => {
+                clientConnectionPromise = null
+                throw error
+            })
+        }
+        await clientConnectionPromise
 
         console.log("BODY EN EL BACKEND: ", request.body)
 
@@ -34,25 +41,13 @@ server.post("/api/test", async (request, response) => {
         // SIMULAR UNA INYECCIÓN SQL MALICIOSA
         // const name = "'); DROP TABLE users; --"
 
-        await client.query(`INSERT INTO users (name) values ($1)`, [name], (err, res) => {
-            if (err) {
-                console.error("DATABASE ERROR: ", err)
-                response.status(500).send("Error en la base de datos", err)
-            } else {
-                console.log("INSERTED", res)
-            }
-        })
+        const insertResult = await client.query(`INSERT INTO users (name) values ($1)`, [name])
+        console.log("INSERTED", insertResult)
 
         // BASE DE DATOS: LEER TODOS LOS REGISTROS DE LA TABLA USERS
-        await client.query("SELECT * FROM users", (err, res) => {
-            if (err) {
-                console.error("DATABASE ERROR: ", err)
-                response.status(500).send("Error en la base de datos")
-            } else {
-                console.log("ROWS: ", res.rows)
-                response.send(res.rows)
-            }
-        })
+        const selectResult = await client.query("SELECT * FROM users")
+        console.log("ROWS: ", selectResult.rows)
+        response.send(selectResult.rows)
     } catch (error) {
         console.error("SERVER ERROR: ", error)
         response.status(500).send("Error en el servidor")
